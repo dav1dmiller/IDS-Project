@@ -1,25 +1,27 @@
-
-from scapy.all import *
-
-from sniffer import *
-import datetime
 import RuleFileReader
+from Sniffer import *
+
+filename = "test.txt"
 
 
-
-
-
-def main():
-    print("Debug test")
-    #Read rules from rule file
-    print("Simple NIDS")
+def main(filename):
+    print("===========================")
+    print("Simple IDS Project")
+    print("CS 497-8 Computer Security")
     print("By: David and Daniel")
+    print("===========================")
+    print("IDS starting...")
 
-    filename = open("test.txt", "w+")
+    #now = datetime.now()
+    #logging.basicConfig(filename="IDS_project " + str(now) + '.log', level=logging.INFO)
 
-    sniffer = Sniffer()
-    sniffer.run(filename)
-
+    global ruleList
+    rulelist, errorCount = RuleFileReader.read(filename)
+    if (errorCount == 0):
+        print("All items in file have been read and assigned values")
+    else:
+        print("Error Count: " + errorCount)
+    sniffer = Sniffer(rulelist)
+    sniffer.run()
 
 main(filename)
-
