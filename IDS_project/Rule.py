@@ -1,7 +1,6 @@
 #Use this file to initialize the rules that we write
 from scapy.all import *
 from RuleFileReader import *
-from IDS_project.RuleFileReader import rulelist
 
 class Rule:
     global ruleCount
@@ -10,24 +9,29 @@ class Rule:
         #print(self.string)
         return self.string
 
+
     """Need to make a rule out of a string. This is necessary because we have to be able to compare incoming packets to a rule not a string"""
     def __init__(self, str):
-        #print("Making the new rule...")
+        #print("CONSTRUCTOR")
+        self.setValues(str)
+
+    def setValues(self, str):
+        # print("Making the new rule...")
         self.string = str
-        #strip extra white spaces
+        # strip extra white spaces
         str = str.strip()
-        #split on the , for the different values to store
+        # split on the , for the different values to store
         token = str.split(',')
         #Duration
         try:
             self.duration=token[0]
-            #print(duration)
+            #print(Rule.duration)
         except:
             raise ValueError("Invalid rule: incorrect value for duration " + token[0])
         #protocol_type
         try:
             self.protocol_type=token[1]
-            #print(protocol_type)
+            #print(Rule.protocol_type)
         except:
             raise ValueError("Invalid rule: incorrect value for protocol_type " + token[1])
         #Service
@@ -86,7 +90,7 @@ class Rule:
             raise ValueError("Invalid rule: incorrect value for num_failed_logins " + token[10])
         #logged_in
         try:
-            self.logged_in = token[11]
+            Rule.logged_in = token[11]
             #print(logged_in)
         except:
             raise ValueError("Invalid rule: incorrect value for logged_in " + token[11])
@@ -276,5 +280,3 @@ class Rule:
             #print(final_number)
         except:
             raise ValueError("Invalid rule: incorrect value for final_number " + token[42])
-
-

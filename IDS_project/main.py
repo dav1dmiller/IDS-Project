@@ -1,7 +1,5 @@
 import RuleFileReader
 from Sniffer import *
-import Rule
-
 filename = "test.txt"
 
 

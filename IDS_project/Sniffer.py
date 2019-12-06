@@ -6,10 +6,11 @@ import io
 import sys
 from threading import Thread
 from Rule import *
+import RuleFileReader
 
-class Sniffer(Thread):
+class Sniffer(Rule):
     def __init__(self, ruleList):
-        Thread.__init__(self)
+        #Thread.__init__(self)
         self.stopped = False
         self.ruleList = ruleList
 
@@ -24,9 +25,7 @@ class Sniffer(Thread):
             # print "checking rule"
             matched = self.match(pkt)
             if(matched):
-                logMessage = rule.getMatchedMessage(pkt)
-                logging.warning(logMessage)
-                print(rule.getMatchedPrintMessage(pkt))
+                print("=======================WARNING=======================")
     def run(self):
         print("Sniffing has started...")
         sniff(filter="", prn=self.inPkt, store=0, stop_filter=self.stopfilter)
@@ -50,10 +49,10 @@ class Sniffer(Thread):
         str=re.sub(r"[\t' ']*", "", str)
         token=str.split("\n")
 
-        #print(token)
+        #print(str1)
         #Assign values
         scapy_header=token[0]
-        if(scapy_header=="###[Ethernet]###" and len(token) > 26):
+        if(scapy_header=="###[Ethernet]###" and len(token) > 28):
             try:
                 dst_mac=token[1].replace("dst=", "")
             except:
@@ -74,6 +73,31 @@ class Sniffer(Thread):
                  #print(ip_header)
             except:
                  raise ValueError("Invalid rule: incorrect value for ip_header " + token[4])
+            try:
+                 ip_version = token[5]
+                 #print(ip_header)
+            except:
+                 raise ValueError("Invalid rule: incorrect value for ip_version " + token[5])
+            try:
+                 ihl = token[6]
+                 #print(ip_header)
+            except:
+                 raise ValueError("Invalid rule: incorrect value for ihl " + token[6])
+            try:
+                 tos = token[7]
+                 #print(ip_header)
+            except:
+                 raise ValueError("Invalid rule: incorrect value for tos " + token[7])
+            try:
+                length = token[8]
+                #print(ip_header)
+            except:
+                 raise ValueError("Invalid rule: incorrect value for len " + token[8])
+
+            try:
+                id = token[9]
+            except:
+                 raise ValueError("Invalid rule: incorrect value for id " + token[9])
 
             try:
                  flag = token[10].replace("flag=", "")
@@ -82,7 +106,7 @@ class Sniffer(Thread):
 
             try:
                 protocol_type=token[13].replace("proto=", "")
-                print("PROTO: " + protocol_type)
+                #print("PROTO: " + protocol_type)
             except:
                 raise ValueError("Invalid rule: incorrect value for proto " + token[13])
             try:
@@ -92,13 +116,13 @@ class Sniffer(Thread):
             #if(token[15].__contains__("src=")):
             try:
                 src_ip=token[15].replace("src=", "")
-                print("SRC IP: " + src_ip)
+                #print("SRC IP: " + src_ip)
             except:
                 raise ValueError("Invalid rule: incorrect value for src_ip " + token[15])
 
             try:
                 dst_ip = token[16].replace("dst=", "")
-                print("DST IP: " + dst_ip)
+                #print("DST IP: " + dst_ip)
             except:
                 raise ValueError("Invalid rule: incorrect value for dst_ip " + token[16])
 
@@ -129,34 +153,30 @@ class Sniffer(Thread):
                  window = token[26].replace("window=", "")
             except:
                  raise ValueError("Invalid rule: incorrect value for window " + token[26])
+            try:
+                 pkt_checksum = token[27].replace("chksum=", "")
+            except:
+                 raise ValueError("Invalid rule: incorrect value for pkt_checksum " + token[27])
+            try:
+                 urgptr = token[28].replace("urgptr=", "")
+            except:
+                 raise ValueError("Invalid rule: incorrect value for urgptr " + token[28])
 
-        """try:
-             pkt_checksum = token[27].replace("chksum=", "")
-        except:
-             raise ValueError("Invalid rule: incorrect value for pkt_checksum " + token[27])"""
+            """Check for matches between the rules and the incoming packets"""
+            """"While we have rules to check. check rules"""
+            for i in range(0, len(RuleFileReader.rulelist)):
+                #print(RuleFileReader.rulelist[i].protocol_type)
+                if(protocol_type != RuleFileReader.rulelist[i].protocol_type):
+                    return False
+                elif(pkt_flags != RuleFileReader.rulelist[i].flag):
+                    return False
+                elif(urgptr != RuleFileReader.rulelist[i].urgent):
+                    return False
+                elif(length != RuleFileReader.rulelist[i].src_bytes):
+                    return False
+                else:
+                    return True
 
-        """if(protocol_type == rule.protocol_type):
-            print("PROTO matches")"""
-
-
-
-        class proto(Enum):
-            TCP=1
-            UDP=2
-            HTTP=3
-            ICMP=4
-        """Get protocols and assign values"""
-        """def protocol(istr):
-            if(str == "tcp"):
-                return proto.TCP
-            elif(str == "udp"):
-                return proto.UDP
-            elif (str == "HTTP"):
-                return proto.HTTP
-            elif (str == "ICMP"):
-                return proto.ICMP
-            else:
-                raise ValueError("Invalid rule!")"""
 
 
 

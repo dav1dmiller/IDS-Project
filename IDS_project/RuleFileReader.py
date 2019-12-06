@@ -1,7 +1,5 @@
-from scapy.all import *
 from Rule import*
-rulelist = list()
-
+rulelist = []
 def read(filename):
     """Read file with all the rule into IDS and return a list of rules"""
     with open(filename, 'r') as fp:
@@ -13,9 +11,7 @@ def read(filename):
                 cnt += 1
                 rule = Rule(line)
                 rulelist.append(rule)
-                #print(rulelist.__len__())
             except ValueError as err:
                 errorCount+=1
                 print(err)
-
     return rulelist, errorCount
