@@ -1,5 +1,6 @@
 import RuleFileReader
 from Sniffer import *
+import Rule
 
 filename = "test.txt"
 
@@ -18,9 +19,10 @@ def main(filename):
     global ruleList
     rulelist, errorCount = RuleFileReader.read(filename)
     if (errorCount == 0):
-        print("All items in file have been read and assigned values")
+        print("All rules in rule file have been read in")
     else:
         print("Error Count: " + errorCount)
+
     sniffer = Sniffer(rulelist)
     sniffer.run()
 
