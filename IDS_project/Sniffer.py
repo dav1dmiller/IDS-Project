@@ -26,6 +26,8 @@ class Sniffer(Rule):
             matched = self.match(pkt)
             if(matched):
                 print("=======================WARNING=======================")
+                logging.warning(str1)
+
     def run(self):
         print("Sniffing has started...")
         sniff(filter="", prn=self.inPkt, store=0, stop_filter=self.stopfilter)
@@ -36,6 +38,7 @@ class Sniffer(Rule):
         """To prevent false positives we need to ensure that all parts of the packet match one of our rules"""
         """This is where checking the correct parameters is critical"""
         # Redirect output of print to the variable capture
+        global str1
         capture = io.StringIO()
         save_stdout = sys.stdout
         sys.stdout = capture
@@ -165,7 +168,6 @@ class Sniffer(Rule):
             """Check for matches between the rules and the incoming packets"""
             """"While we have rules to check. check rules"""
             for i in range(0, len(RuleFileReader.rulelist)):
-                #print(RuleFileReader.rulelist[i].protocol_type)
                 if(protocol_type != RuleFileReader.rulelist[i].protocol_type):
                     return False
                 elif(pkt_flags != RuleFileReader.rulelist[i].flag):
